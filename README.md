@@ -1,5 +1,5 @@
-Req 2 - Daniel Arango Cruz - 202110646 - darangoc2@uniandes.edu.co
- Req 3 - Oscar Iván García - 201630048 - oigarcia@uniandes.edu.co
+ Daniel Arango Cruz - 202110646 - darangoc2@uniandes.edu.co
+ Oscar Iván García - 201630048 - oigarcia@uniandes.edu.co
 
 #ISIS1225 - Librerias de soporte
 

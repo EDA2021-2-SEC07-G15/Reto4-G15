@@ -95,3 +95,11 @@ def ComponentesConectados(graph,a1,a2):
     return model.SCC (graph,a1,a2)
 def BuscarHomonimos(catalogo,ciudad1,ciudad2):
     return model.BuscarHomonimos(catalogo,ciudad1,ciudad2)
+def AereopuertosCercanos(ciudad1,ciudad2,catalogo):
+    return model.AereopuertosCercanos(ciudad1,ciudad2,catalogo)
+def DijkstraReqcorrido(graph,aereo1,aereo2):
+    return model.DijkstraReqcorrido(graph,aereo1,aereo2)
+def ArbolExpanciónMinima (cont, ciudad1):
+    return model.ArbolExpanciónMinima (cont, ciudad1)
+def AfectedVertex(cont,codigo):
+    return model.AfectedVertex(cont,codigo)

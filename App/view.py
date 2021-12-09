@@ -27,6 +27,10 @@ import controller
 from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import heap as h
+from DISClib.ADT import stack as sk
+from DISClib.Algorithms.Graphs import prim as pr
+from DISClib.Algorithms.Graphs import dfs as df
+from DISClib.ADT.graph import gr
 assert cf
 
 Rutas = "routes-utf8-small.csv"
@@ -217,6 +221,133 @@ def printSeleccionHomonimos(homonimos,ciudad1,ciudad2,catalogo):
     Ciudadeleg2 = int(input("Selecciona una ciudad: "))
     CiudadOfi2 = lt.getElement(homonimos[1],Ciudadeleg2)
     return CiudadOfi1, CiudadOfi2
+def PrintResultAero(aereo1,aereo2,ciudad1,ciudad2):
+    print("--- The deperture airport in " +  ciudad1 + " is: ")
+    print("Iata: " + aereo1["IATA"] + " Name: " + aereo1["Name"] + " City: " + aereo1["City"] + " country: " + aereo1["Country"])
+    print("--------------------------------------------------------")
+    print("--- The arrival airport in " +  ciudad2 + " is: ")
+    print("Iata: " + aereo2["IATA"] + " Name: " + aereo2["Name"] + " City: " + aereo2["City"] + " country: " + aereo2["Country"])
+def PrintRe3(camino,catalogo):
+    paradas = lt.newList(datastructure="ARRAY_LIST")
+    mapaIatas = catalogo["AirportsByIATA"]
+    mapaAirlines = catalogo["Airlines"]
+    pesoTotal = 0
+    print("--- Dijkstra´s trip details ---")
+    print("- Trip path: ")
+    for stak in lt.iterator(camino):
+        elemento = sk.pop(camino)
+        verticeA = elemento["vertexA"]
+        verticeB = elemento["vertexB"]
+        peso = float(elemento["weight"])
+        pesoTotal += peso
+        aereo1 = mp.get(mapaIatas,verticeA)["value"]
+        lt.addLast(paradas,aereo1)
+        aereo2 = mp.get(mapaIatas,verticeB)["value"]
+        aereolinea= mp.get(mapaAirlines,verticeA)["value"]
+        Aereolina = ""
+        for vuelo in lt.iterator(aereolinea):
+            destino = vuelo["destino"]
+            if destino == verticeB:
+                Aereolina = vuelo["Aereolinea"]
+        print("---------------------------------------")
+        print("Airline: " + Aereolina +  " Deperture: " + verticeA + " Destination: " + verticeB + " Distance_km: " + str(peso))
+    print("------------------------------------------------")
+    print("Total distance: " + str(pesoTotal) + " (km)")
+    print("-----------------------------------------------")
+    print("-Trip stops ")
+    for parada in lt.iterator(paradas):
+        print("Iata: " + parada["IATA"] + " Name: " + parada["Name"] + " City: " + parada["City"] + " Country: " + parada["Country"])
+    print("Iata: " + aereo2["IATA"] + " Name: " + aereo2["Name"] + " City: " + aereo2["City"] + " country: " + aereo2["Country"])
+def printAereo(aereo,catalogo):
+    mapaIatas = catalogo["AirportsByIATA"]
+    elemento = mp.get(mapaIatas,aereo)["value"]
+    print("--- Deperture  Airport for IATA code: " + aereo + " ---")
+    print("Iata : " + aereo + " Name: " + elemento["Name"] + " City: " + elemento["City"] + " Country: " + elemento["Country"])
+
+
+
+
+def PrintReq4(milla,Begining,arco,cola,cont):
+    mapaAirlines = cont["Airlines"]
+    aveliablemiles = milla * 1.60
+    mapaIndirect = cont["VuelosInDirec"]
+    numAirports = controller.totalfligths(cont,mapaIndirect)
+    print("- Numer of possible airports: " + str(numAirports))
+    print("- Traveling distance sum between airports: " + str(round(arco,2)))
+    print("- Passanger avaliable traveling miles: " + str(aveliablemiles))
+    print("")
+    print("--- Longest possible route with airport " + Begining + " ---")
+    mayorcamino = h.delMin(cola)
+    pesoTotal = 0
+    print("- Longest possible path details: ")
+    i = 1 
+    while i < lt.size(mayorcamino["Camino"]):
+        origen = lt.getElement(mayorcamino["Camino"],i)
+        if i+1 <= lt.size(mayorcamino["Camino"]):
+            destination = lt.getElement(mayorcamino["Camino"],i+1)
+        aereo1 = mp.get(mapaAirlines,origen)["value"]
+        marked = False
+        for vuelo in lt.iterator(aereo1):
+            destino = vuelo["destino"]
+            if destino == destination and not marked:
+                marked = True
+                peso = vuelo["Distancia"]
+                pesoTotal += peso
+                aereolinea = vuelo["Aereolinea"]
+                print("---------------------------------------")
+                print("Airline: " + aereolinea +  " Deperture: " + origen + " Destination: " + destination + " Distance_km: " + str(peso))
+        i+=1
+    print("")
+    print("- Longest possible path distance: " + str(round(pesoTotal,2)))
+    if pesoTotal > aveliablemiles:
+        MillasNecesarias = (pesoTotal - aveliablemiles) / 1.60
+        print("--------------------------------------")
+        print("The passanger needs " + str(round(MillasNecesarias,2)) + " miles to complete the trip")
+    elif aveliablemiles > pesoTotal:
+        print("--------------------------------------")
+        MillasNecesarias = milla - ((aveliablemiles - pesoTotal) / 1.60)
+        print("The passanger does not needs more miles. The passanger can efforts this trip and has an excedent of " + str(round(MillasNecesarias,2)))
+def PrintRe5(resultados,cont,codigo):
+    Graph = cont["VuelosInDirec"]
+    Graphd = cont["VuelosDirec"]
+    mapaIata = cont["AirportsByIATA"]
+    print("Closing the airport with IATA code: " + codigo)
+    print("")
+    print("--- Airports-Routes DiGraph ---")
+    OriginalNumVd = controller.totalConnections(cont,Graphd)
+    OriginalNumEd = controller.totalfligths(cont,Graphd)
+    print("Original number of airports: " + str(OriginalNumEd) + " and " + " Routes: " + str(OriginalNumVd))
+    print("")
+    print("--- Airports-Routes Graph ---")
+    OriginalNumV = controller.totalConnections(cont,Graph)
+    OriginalNumE = controller.totalfligths(cont,Graph)
+    print("Original number of airports: " + str(OriginalNumE) + " and " + " Routes: " + str(OriginalNumV))
+    print("")
+    print("--- Removing Airport with IATA: " + codigo + " ---")
+    removed = gr.removeVertex(Graphd,codigo)
+    ReNumDV = controller.totalConnections(cont,removed)
+    ReNumDE = controller.totalfligths(cont,removed)
+    print("Resulting number of airports: " + str(ReNumDE) + " and " + " Routes: " + str(ReNumDV))
+    print("")
+    print("--- Airports-Routes Graph ---")
+    Iremoved = gr.removeVertex(Graph,codigo)
+    ReNumV = controller.totalConnections(cont,Iremoved)
+    ReNumE = controller.totalfligths(cont,Iremoved)
+    print("Resulting number of airports: " + str(ReNumE) + " and " + " Routes: " + str(ReNumV))
+    print("")
+    print("There are " + str(resultados[0]) + " Airports affected by the removal of " + codigo)
+    print("The fisrts 5 airports affected are: ")
+    i = 1
+    iterador = lt.iterator(resultados[1])
+    while i <=5:
+        elemento = next(iterador)
+        airport = mp.get(mapaIata,elemento)["value"]
+        print("Iata: " + elemento + " Name: " + airport["Name"] + " City: " + airport["City"] + " Country: " + airport["Country"])
+
+        i+=1
+
+
+        
 
 
 
@@ -249,10 +380,22 @@ while True:
         ciudad2 = input (" Ciudad de destino: ")
         homonimos = controller.BuscarHomonimos(cont,ciudad1,ciudad2)
         CiudadesSeleccionadas = printSeleccionHomonimos(homonimos,ciudad1,ciudad2,cont)
-        print(CiudadesSeleccionadas[0])
-        print(CiudadesSeleccionadas[1])
-        pass
+        DistanciasAerepuertos = controller.AereopuertosCercanos(CiudadesSeleccionadas[0],CiudadesSeleccionadas[1],cont)
+        PrintResultAero(DistanciasAerepuertos[0],DistanciasAerepuertos[1],ciudad1,ciudad2)
+        camino = controller.DijkstraReqcorrido(cont["VuelosDirec"],DistanciasAerepuertos[0]["IATA"],DistanciasAerepuertos[1]["IATA"])
+        PrintRe3(camino,cont)
+    elif int(inputs[0]) == 5:
+        milla = float(input("Millas disponibles: "))
+        Begining = input("Aereopuerto de salida: ")
+        printAereo(Begining,cont)
+        resultados = controller.ArbolExpanciónMinima (cont, Begining)
+        PrintReq4(milla,Begining,resultados[0],resultados[1],cont)
+    elif int(inputs[0]) == 6:
+        codigo = input("Codigo IATA del aereopuerto fuera de funcionamiento: ")
+        resultados = controller.AfectedVertex(cont,codigo)
+        PrintRe5(resultados,cont,codigo)
 
+            
     else:
         sys.exit(0)
 sys.exit(0)

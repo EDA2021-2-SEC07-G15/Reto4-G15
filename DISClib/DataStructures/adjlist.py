@@ -106,6 +106,12 @@ def removeVertex(graph, vertex):
     Raises:
         Exception
     """
+    try:
+        map.remove(graph["vertices"],vertex)
+        return graph
+    except Exception as exp:
+        error.reraise(exp,"remove:vertex")
+    
     # TODO
     pass
 

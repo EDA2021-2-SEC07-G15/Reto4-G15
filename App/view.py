@@ -24,6 +24,7 @@ from os import name
 import config as cf
 import sys
 import controller
+import threading
 from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import heap as h
@@ -32,9 +33,11 @@ from DISClib.Algorithms.Graphs import prim as pr
 from DISClib.Algorithms.Graphs import dfs as df
 from DISClib.ADT.graph import gr
 assert cf
+threading.stack_size(67108864)  # 64MB stack
+sys.setrecursionlimit(2 ** 20)
 
-Rutas = "routes-utf8-small.csv"
-Aereopuertos = "airports-utf8-small.csv" 
+Rutas = "routes-utf8-large.csv"
+Aereopuertos = "airports-utf8-large.csv" 
 Worldcities = "worldcities-utf8.csv"
 """
 La vista se encarga de la interacción con el usuario
